@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=TestSecondRatings
+comment1.params=
+comment1.target=void\ initializeSecondRatingsObject()
+comment2.params=
+comment2.target=void\ printMoviesSortedByRating()
+comment3.params=
+comment3.target=void\ getAverageRatingByTitle()
+comment4.params=
+comment4.target=void\ runTests()
+comment5.params=args
+comment5.target=void\ Main(java.lang.String[])
+numComments=6
