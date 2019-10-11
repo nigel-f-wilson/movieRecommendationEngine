@@ -14,17 +14,16 @@ public class FirstRatings {
     ArrayList<Movie> movieList;
     Map<String,Integer> directorMovieCountMap;
     
-    public ArrayList<Movie> loadMovies (String filename) throws java.io.IOException {
+    public ArrayList<Movie> loadMovies (String filepath) throws java.io.IOException {
         // filename is a CSV file of movie information.
-        String path = "data/" + filename;
-        FileResource fr = new FileResource(path);
-        System.out.println("FileResource created from data/" + filename);
+        FileResource fr = new FileResource(filepath);
+        // System.out.println("FileResource created from " + filename);
         
         // get CSV Parser.
         boolean hasHeaderRow = true;
         CSVParser parser = fr.getCSVParser(hasHeaderRow);
         if (hasHeaderRow == true) {
-            printHeaderRowInfo(parser);
+            // printHeaderRowInfo(parser);
         }
         
         // convert CSV to ArrayList<Movie>.
@@ -58,14 +57,17 @@ public class FirstRatings {
             throw new java.io.IOException("method testLoadMovies failed due to bad filename parameter.");
         }
         
-        int comedies = countComedies();
+      
         int countRuntimeOver150min = countByRuntime(150);
         makeDirectorMovieCountMap();
         int maxCount = maxCountByOneDirector();
         ArrayList<String> mostProlificDirectors = getDirectorsByMovieCount (maxCount);
         
-        System.out.println("The number of movies that were Comedy: " + comedies);
-        System.out.println("The number of movies that were longer than 150 minutes: " + countRuntimeOver150min);
+        System.out.println("The number of movies that were Comedy: " + countComedies());
+        
+        int runtimeLimit = 150;
+        System.out.println("The number of movies that were longer than " + runtimeLimit + " minutes: " + countByRuntime(runtimeLimit));
+        
         System.out.println("The most prolific director(s) made movies: " + maxCount + " movies.");
         System.out.println("They were: " + Arrays.toString(mostProlificDirectors.toArray()));
     }
@@ -170,13 +172,13 @@ public class FirstRatings {
         // filename is a CSV file of movie Rater and Rating information.
         String path = "data/" + filename;
         FileResource fr = new FileResource(path);
-        System.out.println("FileResource created from \"data/" + filename + "\"");
+        // System.out.println("FileResource created from \"data/" + filename + "\"");
         
         // get CSV Parser.
         boolean hasHeaderRow = true;
         CSVParser parser = fr.getCSVParser(hasHeaderRow);
         if (hasHeaderRow == true) {
-            printHeaderRowInfo(parser);
+            // printHeaderRowInfo(parser);
         }
         
         // Make ArrayList of Raters, populate it, and return it.
@@ -196,7 +198,7 @@ public class FirstRatings {
     }
     private void ifRaterIsNotOnListYetAddThem(ArrayList<Rater> ratersList, String raterID) {
         if (!raterIsOnList(ratersList, raterID)) {
-            Rater newRater = new Rater(raterID);
+            Rater newRater = new EfficientRater(raterID);
             ratersList.add(newRater);
         }
     }
@@ -216,8 +218,8 @@ public class FirstRatings {
                 return rater;
             }
         }
-        System.out.println("Possible Error: getRaterByID called on nonexistant raterID.");
-        return new Rater(raterID);
+        System.out.println("Possible Error: getRaterByID called on nonexistant raterID. Returned new blank Rater object.");
+        return new EfficientRater(raterID);
     }
     
     public void testLoadRaters () throws java.io.IOException {
