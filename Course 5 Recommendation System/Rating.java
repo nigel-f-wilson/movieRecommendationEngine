@@ -1,3 +1,20 @@
+/**
+ * Rating is a basic POJO data-type used by several classes throughout this project.
+ * A Rating object is simply a single key and value { movieID : rating}
+ * 
+ * In the ThirdRatings class the instance variable myRaters is a list where each Rating
+ * represents a single rater's rating of the specified movie and movieIDs can appear more than once.
+ * 
+ * In MovieRunnerWithFilters a list of type Rating is used to connect each movieID to the 
+ * average of all ratings that movie recieved.  This class uses a ThirdRatings Object but internally 
+ * it uses the list of Ratings to mean something different than what a rating means in TR. 
+ * 
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ *
+ */
+
 
 import java.util.*;
 // An immutable passive data object (PDO) to represent the rating data

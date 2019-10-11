@@ -10,7 +10,7 @@ import java.util.*;
 
 public class SecondRatings {
     private ArrayList<Movie> movieList;
-    private ArrayList<Rater> raterList;
+    private ArrayList<Rater> raterList;  
     
     public SecondRatings() throws java.io.IOException {
         // default constructor
@@ -19,7 +19,8 @@ public class SecondRatings {
     public SecondRatings (String moviefile, String ratingsfile) throws java.io.IOException {
         // this("ratedmoviesfull.csv", "ratings.csv");
         FirstRatings fr = new FirstRatings();
-        movieList = fr.loadMovies(moviefile);
+        String filepath = "data/" + moviefile;
+        movieList = fr.loadMovies(filepath);
         raterList = fr.loadRaters(ratingsfile);
     }
     
