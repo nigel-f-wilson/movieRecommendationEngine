@@ -99,5 +99,37 @@ public class FourthRatings {
             }
         }
         return similarityScores.sort().reverse();
-    }          
+    }
+     
+    public ArrayList<Rating> getSimilarRatings (String raterID, int numSimilarRaters, int minRaters) {
+        ArrayList<Rating> moviesWeightedScores = new ArrayList<Rating>();  // Rating <movieID, weightedAvgRating>
+       
+        // Get list of similarity comparissons.
+        ArrayList<Rating> topSimilarityScores = getSimilarities(raterID);  // Rating <raterID, similarityScore>
+        topSimilarityScores.sort().subList(0, numSimilarRaters);  // should already be sorted, trim list to include only the n most similar Raters.
+        
+        // Get list of all movieIDs 
+        ArrayList<String> movieIDs = MovieDatabase.filterBy(new TrueFilter());
+        
+        // For each movie, see if enough of the most similar raters rated it, 
+        // if so calculate the weighted average of the scores they gave it based on their similarity scores and the scores they gave that movie., 
+        for (String movieID : movieIDs) {
+            double countRatingsRecieved = 0.0;
+            double netWeightedScore = 0.0;
+            for (Rating rating : topSimilarityScores) {    // Rating <raterID, similarityScore>   
+                Rater rater = RaterDatabase.getRater(rating.getItem());
+                if (rater.hasRating(movieID)) {
+                    countRatingsRecieved++;
+                    double weightedScoreFromThisRater = (rating.getRating() *  rater.getRating(movieID));
+                    netWeightedScore += weightedScoreFromThisRater;
+                }    
+            }
+            if (countRatingsRecieved >= minRaters) {  // else do not add to recommendations list.
+                double avgWeightedScore = (netWeightedScore / countRatingsRecieved);
+                moviesWeightedScores.add(new Rating(movieID, avgWeightedScore));
+            }
+        }
+        moviesWeightedScores.sort().reverse();
+        return moviesWeightedScores;
+    }   
 }
