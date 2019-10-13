@@ -86,5 +86,18 @@ public class FourthRatings {
         }
         return dotProduct;
     }
-        
+    
+    private ArrayList<Rating> getSimilarities (String raterID) {
+        ArrayList<Rating> similarityScores;
+        Rater me = RaterDatabase.getRater(raterID);
+        ArrayList<Rater> otherRaters = RaterDatabase.getRaters();
+        for (Rater them : otherRaters) {
+            if (me.getID() == them.getID()) { continue; }
+            double similarity = dotProduct(me, them);
+            if (similarity >= 0.0) {
+                similarityScores.add(new Rating(them.getID(), similarity));
+            }
+        }
+        return similarityScores.sort().reverse();
+    }          
 }
