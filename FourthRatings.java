@@ -5,8 +5,8 @@
  * so where you have code with myRaters, you need to replace the code with calls to 
  * methods in the RaterDatabase class. 
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author Nigel Wislon 
+ * @version 13 Oct 2019
  */
 
 import java.util.*;
@@ -69,4 +69,22 @@ public class FourthRatings {
         }
         return avgRatings;
     } 
+    
+    // getSimilarities will call this method.
+    private int dotProduct(Rater me, Rater r) {
+        double dotProduct = 0.0;  //  running total of products ratings of movies we both rated.  
+        ArrayList<String> myMoviesRated = me.getItemsRated();
+        for (String id : myMoviesRated) {
+            if (r.hasRating) {
+                double myOneToTen = me.getRating(id);
+                double yourOneToTen = r.getRating(id);
+                double myFiveToFive = myOneToTen - 5;
+                double yourFiveToFive = yourOneToTen - 5;
+                double partialProduct = myFiveToFive * yourFiveToFive;
+                dotProduct += partialProduct;
+            }
+        }
+        return dotProduct;
+    }
+        
 }
