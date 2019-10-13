@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=TrueFilter
+comment0.text=\r\n\ Given\ any\ movieID\ this\ filter\ passes\ it.\ \ Use\ to\ get\ unfiltered\ complete\ list.\ \r\n\ \r\n\ @author\ Nigel\ Wilson\ \r\n\ @version\ 13\ Oct\ 2019\r\n
+comment1.params=id
+comment1.target=boolean\ satisfies(java.lang.String)
+numComments=2

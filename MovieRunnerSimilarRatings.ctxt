@@ -1,0 +1,9 @@
+#BlueJ class context
+comment0.target=MovieRunnerSimilarRatings
+comment1.params=
+comment1.target=void\ setup()
+comment2.params=
+comment2.target=void\ printAverageRatings()
+comment3.params=
+comment3.target=void\ printAverageRatingsByYearAfterAndGenre()
+numComments=4

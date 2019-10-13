@@ -1,9 +1,18 @@
 
 /**
- * Write a description of RaterDatabase here.
+ * RaterDatabase 
+ * state: HashMap named ourRaters that maps a raterID String to a Rater object that includes all the movie ratings made by this rater.
+ * initialize(String filenameOfRatingData)
+ * default initialize method initializes the HashMap ourRaters if it does not exist.
+ * addRatings(String parameter filename)  
+ * addRaterRating(String raterID, String movieID, double rating) Notice that the method addRatings calls this method.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * getRater(String id) . This method returns a Rater that has this ID.
+ * getRaters() returns an ArrayList of all Raters from the database.
+ * size() returns the number of raters in the database..
+ * 
+ * @author Nigel Wilson 
+ * @version 13 Oct 2019
  */
 
 import edu.duke.*;

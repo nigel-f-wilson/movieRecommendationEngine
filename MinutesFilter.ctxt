@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=MinutesFilter
+comment0.text=\r\n\ MinutesFilter\ constructor\ takes\ two\ int\ parameters\ representing\ min\ and\ max\ length\ in\ minutes.\r\n\ Default\ constructor\ takes\ no\ parameters\ and\ assumes\ min\ \=\ 0\ and\ max\ \=\ 120.\r\n\ satisfies\ method\ returns\ true\ if\ a\ movie\u2019s\ running\ time\ is\ at\ least\ min\ minutes\ and\ no\ more\ than\ max\ minutes.\r\n\ \r\n\ \r\n\ @author\ Nigel\ Wilson\r\n\ @version\ 11\ Oct\ 2019\r\n
+comment1.params=min\ max
+comment1.target=MinutesFilter(int,\ int)
+comment2.params=
+comment2.target=MinutesFilter()
+comment3.params=id
+comment3.target=boolean\ satisfies(java.lang.String)
+numComments=4
