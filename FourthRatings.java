@@ -148,4 +148,28 @@ public class FourthRatings {
         }
         return netWeightedScore;
     }
+        
+    public ArrayList<Rating> getSimilarRatingsByFilter (String myID, int numSimilarRaters, int minRaters, Filter filterCriteria) {
+        // Return List     
+        ArrayList<Rating> moviesWeightedScores = new ArrayList<Rating>();  // Rating <movieID, weightedAvgRating>
+       
+        // Get list of similarity comparissons.
+        ArrayList<Rating> mostSimilarOthers = getSimilarities(myID);  // Rating <raterID, similarityScore>
+        mostSimilarOthers.subList(0, numSimilarRaters);  // trim list to include only the n most similar Raters.
+        
+        // Get list of only movieIDs that pass filter.
+        ArrayList<String> movieIDs = MovieDatabase.filterBy(filterCriteria);
+        
+        for (String movieID : movieIDs) {
+            double countRatings = countRatingsForMovie(movieID, mostSimilarOthers);
+            if (countRatings >= minRaters) {
+                double netWeightedScore = getNetWeightedScore(movieID, mostSimilarOthers);
+                double avgWeightedScore = (netWeightedScore / countRatings);
+                moviesWeightedScores.add(new Rating(movieID, avgWeightedScore));
+            }            
+        }
+        Collections.sort(moviesWeightedScores);
+        Collections.reverse(moviesWeightedScores);
+        return moviesWeightedScores;
+    }   
 }
