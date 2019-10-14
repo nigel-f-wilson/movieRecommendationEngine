@@ -1,4 +1,3 @@
-
 /**
  * FourthRatings 
  * use RaterDatabase and MovieDatabase static methods in place of instance variables—
@@ -71,11 +70,11 @@ public class FourthRatings {
     } 
     
     // getSimilarities will call this method.
-    private int dotProduct(Rater me, Rater r) {
-        double dotProduct = 0.0;  //  running total of products ratings of movies we both rated.  
+    private double dotProduct(Rater me, Rater r) {
+        double dotProduct = 0;  //  running total of products ratings of movies we both rated.  
         ArrayList<String> myMoviesRated = me.getItemsRated();
         for (String id : myMoviesRated) {
-            if (r.hasRating) {
+            if (r.hasRating(id)) {
                 double myOneToTen = me.getRating(id);
                 double yourOneToTen = r.getRating(id);
                 double myFiveToFive = myOneToTen - 5;
@@ -88,48 +87,89 @@ public class FourthRatings {
     }
     
     private ArrayList<Rating> getSimilarities (String raterID) {
-        ArrayList<Rating> similarityScores;
+        ArrayList<Rating> similarityScores = new ArrayList<Rating>();
         Rater me = RaterDatabase.getRater(raterID);
-        ArrayList<Rater> otherRaters = RaterDatabase.getRaters();
-        for (Rater them : otherRaters) {
-            if (me.getID() == them.getID()) { continue; }
-            double similarity = dotProduct(me, them);
-            if (similarity >= 0.0) {
-                similarityScores.add(new Rating(them.getID(), similarity));
+        ArrayList<Rater> allRaters = RaterDatabase.getRaters();
+        for (Rater them : allRaters) {
+            if (me.getID() != them.getID()) { 
+                double similarity = dotProduct(me, them);
+                if (similarity >= 0.0) {
+                    similarityScores.add(new Rating(them.getID(), similarity));
+                }
             }
         }
-        return similarityScores.sort().reverse();
+        Collections.sort(similarityScores);
+        Collections.reverse(similarityScores);
+        return similarityScores;
     }
      
-    public ArrayList<Rating> getSimilarRatings (String raterID, int numSimilarRaters, int minRaters) {
+    public ArrayList<Rating> getSimilarRatings (String myID, int numSimilarRaters, int minRaters) {
         ArrayList<Rating> moviesWeightedScores = new ArrayList<Rating>();  // Rating <movieID, weightedAvgRating>
        
         // Get list of similarity comparissons.
-        ArrayList<Rating> topSimilarityScores = getSimilarities(raterID);  // Rating <raterID, similarityScore>
-        topSimilarityScores.sort().subList(0, numSimilarRaters);  // should already be sorted, trim list to include only the n most similar Raters.
+        ArrayList<Rating> mostSimilarOthers = getSimilarities(myID);  // Rating <raterID, similarityScore>
+        mostSimilarOthers.subList(0, numSimilarRaters);  // trim list to include only the n most similar Raters.
         
         // Get list of all movieIDs 
         ArrayList<String> movieIDs = MovieDatabase.filterBy(new TrueFilter());
         
-        // For each movie, see if enough of the most similar raters rated it, 
-        // if so calculate the weighted average of the scores they gave it based on their similarity scores and the scores they gave that movie., 
         for (String movieID : movieIDs) {
-            double countRatingsRecieved = 0.0;
-            double netWeightedScore = 0.0;
-            for (Rating rating : topSimilarityScores) {    // Rating <raterID, similarityScore>   
-                Rater rater = RaterDatabase.getRater(rating.getItem());
-                if (rater.hasRating(movieID)) {
-                    countRatingsRecieved++;
-                    double weightedScoreFromThisRater = (rating.getRating() *  rater.getRating(movieID));
-                    netWeightedScore += weightedScoreFromThisRater;
-                }    
-            }
-            if (countRatingsRecieved >= minRaters) {  // else do not add to recommendations list.
-                double avgWeightedScore = (netWeightedScore / countRatingsRecieved);
+            double countRatings = countRatingsForMovie(movieID, mostSimilarOthers);
+            if (countRatings >= minRaters) {
+                double netWeightedScore = getNetWeightedScore(movieID, mostSimilarOthers);
+                double avgWeightedScore = (netWeightedScore / countRatings);
                 moviesWeightedScores.add(new Rating(movieID, avgWeightedScore));
-            }
+            }            
         }
-        moviesWeightedScores.sort().reverse();
+        Collections.sort(moviesWeightedScores);
+        Collections.reverse(moviesWeightedScores);
+        return moviesWeightedScores;
+    }   
+    private double countRatingsForMovie(String movieID, ArrayList<Rating> mostSimilarOthers) {
+        double count = 0.0;
+        for (Rating raterSimilarityScore : mostSimilarOthers) {    // Rating <raterID, similarityScore>   
+            String raterID = raterSimilarityScore.getItem();
+            Rater rater = RaterDatabase.getRater(raterID);
+            if (rater.hasRating(movieID)) {
+                count += 1.0;
+            }    
+        }
+        return count;
+    }
+    private double getNetWeightedScore(String movieID, ArrayList<Rating> mostSimilarOthers) {
+        double netWeightedScore = 0.0;
+        for (Rating raterSimilarityScore : mostSimilarOthers) {    // Rating <raterID, similarityScore>   
+            String raterID = raterSimilarityScore.getItem();
+            Rater rater = RaterDatabase.getRater(raterID);
+            if (rater.hasRating(movieID)) {
+                double weightedScoreFromThisRater = (raterSimilarityScore.getValue() *  rater.getRating(movieID));
+                netWeightedScore += weightedScoreFromThisRater;
+            }    
+        }
+        return netWeightedScore;
+    }
+        
+    public ArrayList<Rating> getSimilarRatingsByFilter (String myID, int numSimilarRaters, int minRaters, Filter filterCriteria) {
+        // Return List     
+        ArrayList<Rating> moviesWeightedScores = new ArrayList<Rating>();  // Rating <movieID, weightedAvgRating>
+       
+        // Get list of similarity comparissons.
+        ArrayList<Rating> mostSimilarOthers = getSimilarities(myID);  // Rating <raterID, similarityScore>
+        mostSimilarOthers.subList(0, numSimilarRaters);  // trim list to include only the n most similar Raters.
+        
+        // Get list of only movieIDs that pass filter.
+        ArrayList<String> movieIDs = MovieDatabase.filterBy(filterCriteria);
+        
+        for (String movieID : movieIDs) {
+            double countRatings = countRatingsForMovie(movieID, mostSimilarOthers);
+            if (countRatings >= minRaters) {
+                double netWeightedScore = getNetWeightedScore(movieID, mostSimilarOthers);
+                double avgWeightedScore = (netWeightedScore / countRatings);
+                moviesWeightedScores.add(new Rating(movieID, avgWeightedScore));
+            }            
+        }
+        Collections.sort(moviesWeightedScores);
+        Collections.reverse(moviesWeightedScores);
         return moviesWeightedScores;
     }   
 }
